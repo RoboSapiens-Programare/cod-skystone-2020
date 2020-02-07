@@ -5,8 +5,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase;
-import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREV;
+import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveBase;
+import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveREV;
 
 /*
  * This is a simple routine to test translational drive capabilities.
