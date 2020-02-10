@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveREV;
+import org.firstinspires.ftc.teamcode.drive.subsystems.MecanumDrive;
 
 /*
  * Op mode for tuning follower PID coefficients (located in the drive base classes). The robot
@@ -19,7 +20,7 @@ public class FollowerPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDriveBase drive = new SampleMecanumDriveREV(hardwareMap);
+        SampleMecanumDriveBase drive = new MecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0));
 

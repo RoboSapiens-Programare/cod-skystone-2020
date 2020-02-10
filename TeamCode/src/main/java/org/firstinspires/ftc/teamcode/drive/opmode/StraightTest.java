@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveREV;
+import org.firstinspires.ftc.teamcode.drive.subsystems.MecanumDrive;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -18,7 +19,7 @@ public class StraightTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDriveBase drive = new SampleMecanumDriveREV(hardwareMap);
+        SampleMecanumDriveBase drive = new MecanumDrive(hardwareMap);
 
         Trajectory trajectory = drive.trajectoryBuilder()
                 .forward(DISTANCE)

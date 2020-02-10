@@ -29,9 +29,9 @@ public class ParallelThreeWheelLocalizer extends ThreeTrackingWheelLocalizer {
                 new Pose2d(FORWARD_OFFSET, 0, Math.toRadians(90)) // front
         ));
 
-        leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
-        rightEncoder = hardwareMap.dcMotor.get("rightEncoder");
-        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
+        leftEncoder = hardwareMap.dcMotor.get("LeftEncoder");
+        rightEncoder = hardwareMap.dcMotor.get("RightEncoder");
+        frontEncoder = hardwareMap.dcMotor.get("MiddleEncoder");
     }
 
     public static double encoderTicksToInches(int ticks) {
