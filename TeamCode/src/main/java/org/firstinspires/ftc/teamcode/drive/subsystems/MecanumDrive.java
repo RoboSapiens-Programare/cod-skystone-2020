@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.drive.localizer.BrokeEncoderLocalizer;
 import org.firstinspires.ftc.teamcode.drive.localizer.ParallelThreeWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveBase;
 
@@ -58,11 +59,11 @@ public class MecanumDrive extends SampleMecanumDriveBase { //TODO: switch to Mec
             setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        motorBR.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorFR.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //add localizer
-        setLocalizer(new ParallelThreeWheelLocalizer(hardwareMap));
+        setLocalizer(new BrokeEncoderLocalizer(hardwareMap));
 
     }
 
