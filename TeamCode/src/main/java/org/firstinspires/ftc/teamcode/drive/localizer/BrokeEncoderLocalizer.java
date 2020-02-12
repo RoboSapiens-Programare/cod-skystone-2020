@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BrokeEncoderLocalizer extends TwoTrackingWheelLocalizer {
-    public static double TICKS_PER_REV = 20;
+    public static double TICKS_PER_REV = 50; //TODO
     public static double WHEEL_RADIUS = 2; // inch
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
