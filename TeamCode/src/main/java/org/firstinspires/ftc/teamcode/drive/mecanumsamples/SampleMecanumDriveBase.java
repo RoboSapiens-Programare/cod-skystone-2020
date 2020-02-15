@@ -26,6 +26,8 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.drive.opmode.tests.TensorFlowUtil;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ import java.util.List;
 @Config
 public abstract class SampleMecanumDriveBase extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4.1, 1.3, 0.3);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(30, 7, 0.7);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(55, 10, 7);
 
 
     public enum Mode {
@@ -49,6 +51,10 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
 
     private FtcDashboard dashboard;
     private NanoClock clock;
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
 
     private Mode mode;
 
@@ -61,6 +67,8 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
 
     private List<Double> lastWheelPositions;
     private double lastTimestamp;
+
+    public TensorFlowUtil tfodLocalizer; //plm cantaret armonios
 
     public SampleMecanumDriveBase() {
         super(kV, kA, kStatic, TRACK_WIDTH);
@@ -77,6 +85,8 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
 
         constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID);
+
+        tfodLocalizer = new TensorFlowUtil();
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
@@ -141,6 +151,9 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());
         packet.put("headingError", lastError.getHeading());
+        if(tfodLocalizer.update(packet).hasDetectedObject){
+            mode = Mode.IDLE;
+        }
 
         switch (mode) {
             case IDLE:

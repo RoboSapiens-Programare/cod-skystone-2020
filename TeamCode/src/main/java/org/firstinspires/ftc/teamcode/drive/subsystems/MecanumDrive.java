@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.drive.localizer.BrokeEncoderLocalizer;
 import org.firstinspires.ftc.teamcode.drive.localizer.ParallelThreeWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveBase;
+import org.firstinspires.ftc.teamcode.drive.opmode.tests.TensorFlowUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +65,8 @@ public class MecanumDrive extends SampleMecanumDriveBase { //TODO: switch to Mec
 
         //add localizer
         setLocalizer(new BrokeEncoderLocalizer(hardwareMap));
+
+        tfodLocalizer.activateTfod(hardwareMap);
 
     }
 
