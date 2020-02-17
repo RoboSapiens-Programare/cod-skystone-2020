@@ -10,6 +10,9 @@ import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveBas
 import org.firstinspires.ftc.teamcode.drive.opmode.tests.TensorFlowUtil;
 import org.firstinspires.ftc.teamcode.drive.subsystems.MecanumDrive;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Autonomous(group = "drive")
 public class OpModeTest extends LinearOpMode {
     //public static double DISTANCE = 60;
@@ -36,6 +39,13 @@ public class OpModeTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+        List<String> Triggers = new ArrayList<>();
+        Triggers.add("Stone");
+        Triggers.add("Skystone");
+
+        drive.setTfodIdleTrigger(Triggers);
         drive.followTrajectorySync(trajectory1);
+        drive.waitForIdle();
+
     }
 }

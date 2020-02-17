@@ -70,6 +70,16 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
 
     public TensorFlowUtil tfodLocalizer; //plm cantaret armonios
 
+    private List<String> TfodIdleTrigger = new ArrayList<>();
+
+    public void setTfodIdleTrigger(List<String> tfodIdleTrigger) {
+        TfodIdleTrigger = tfodIdleTrigger;
+    }
+
+    public void clearTfodIdleTrigger(){
+        TfodIdleTrigger = new ArrayList<>();
+    }
+
     public SampleMecanumDriveBase() {
         super(kV, kA, kStatic, TRACK_WIDTH);
 
@@ -149,6 +159,13 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());
         packet.put("headingError", lastError.getHeading());
+
+
+        for ( String tfodTrigger : TfodIdleTrigger) {
+            if (tfodTrigger.equals(tfodLocalizer.update().detectedObjectLabel)) {
+                setMode(Mode.IDLE);
+            }
+        }
 
         switch (mode) {
             case IDLE:
