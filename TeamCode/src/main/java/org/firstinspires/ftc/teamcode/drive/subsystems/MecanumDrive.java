@@ -66,7 +66,7 @@ public class MecanumDrive extends SampleMecanumDriveBase { //TODO: switch to Mec
         //add localizer
         setLocalizer(new BrokeEncoderLocalizer(hardwareMap));
 
-        tfodLocalizer.activateTfod(hardwareMap);
+        tfodLocalizer = new TensorFlowUtil(hardwareMap);
 
     }
 

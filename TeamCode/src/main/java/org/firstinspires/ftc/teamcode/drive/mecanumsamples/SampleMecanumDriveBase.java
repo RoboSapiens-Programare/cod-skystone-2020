@@ -85,8 +85,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
 
         constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID);
-
-        tfodLocalizer = new TensorFlowUtil();
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
@@ -151,9 +149,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());
         packet.put("headingError", lastError.getHeading());
-        if(tfodLocalizer.update(packet).hasDetectedObject){
-            mode = Mode.IDLE;
-        }
 
         switch (mode) {
             case IDLE:

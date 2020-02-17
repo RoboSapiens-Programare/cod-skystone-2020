@@ -25,6 +25,46 @@ public class TensorFlowUtil {
     private TFObjectDetector tfod;
     private VuforiaLocalizer vuforia;
 
+    public TensorFlowUtil(HardwareMap hardwareMap) {
+        activateTfod(hardwareMap);
+    }
+
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        closeTfod();
+    }
+
+
+    public TensorFlowReturn update(){
+        if (tfod != null) {
+            double lastTop = 0, lastBottom = 0, lastRight = 0, lastLeft = 0, lastAngle = 0;
+            boolean hasRecognised = false;
+            String lastLabel = "";
+
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
+                    lastTop = recognition.getTop();
+                    lastBottom = recognition.getBottom();
+                    lastRight = recognition.getRight();
+                    lastLeft = recognition.getLeft();
+                    lastLabel = recognition.getLabel();
+                    lastAngle = recognition.estimateAngleToObject(AngleUnit.RADIANS);
+                    hasRecognised = true;
+                }
+            }
+
+            return new TensorFlowReturn(lastTop, lastLeft, lastRight, lastBottom, lastAngle, hasRecognised, lastLabel);
+        }
+
+        return null;
+    }
+
     public TensorFlowReturn update(TelemetryPacket packet){
         if (tfod != null) {
             double lastTop = 0, lastBottom = 0, lastRight = 0, lastLeft = 0, lastAngle = 0;
@@ -62,18 +102,13 @@ public class TensorFlowUtil {
     }
 
     private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
 
-        //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
 
     /**
@@ -95,10 +130,6 @@ public class TensorFlowUtil {
             initTfod(hardwareMap);
         }
 
-        /**
-         * Activate TensorFlow Object Detection before we wait for the start command.
-         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-         **/
         if (tfod != null) {
             tfod.activate();
         }

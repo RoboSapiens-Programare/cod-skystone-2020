@@ -37,7 +37,5 @@ public class OpModeTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         drive.followTrajectorySync(trajectory1);
-
-        drive.tfodLocalizer.closeTfod();
     }
 }
