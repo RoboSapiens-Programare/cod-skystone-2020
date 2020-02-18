@@ -27,7 +27,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.drive.opmode.tests.TensorFlowUtil;
+import org.firstinspires.ftc.teamcode.util.TensorFlowThread;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
@@ -68,16 +68,16 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
     private List<Double> lastWheelPositions;
     private double lastTimestamp;
 
-    public TensorFlowUtil tfodLocalizer; //plm cantaret armonios
+    public TensorFlowThread tfodLocalizer; //plm cantaret armonios
 
-    private List<String> TfodIdleTrigger = new ArrayList<>();
+    private List<String> TfodIdleTriggers = new ArrayList<>();
 
-    public void setTfodIdleTrigger(List<String> tfodIdleTrigger) {
-        TfodIdleTrigger = tfodIdleTrigger;
+    public void setTfodIdleTriggers(List<String> tfodIdleTriggers) {
+        TfodIdleTriggers = tfodIdleTriggers;
     }
 
     public void clearTfodIdleTrigger(){
-        TfodIdleTrigger = new ArrayList<>();
+        TfodIdleTriggers = new ArrayList<>();
     }
 
     public SampleMecanumDriveBase() {
@@ -136,7 +136,7 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
             case TURN:
                 return new Pose2d(0, 0, turnController.getLastError());
             case IDLE:
-                return new Pose2d();
+            return new Pose2d();
         }
         throw new AssertionError();
     }
@@ -159,10 +159,12 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());
         packet.put("headingError", lastError.getHeading());
+        packet.put("found object", tfodLocalizer.getLastUpdate().hasDetectedObject);
+        packet.put("found angle", tfodLocalizer.getLastUpdate().approxAngle);
 
 
-        for ( String tfodTrigger : TfodIdleTrigger) {
-            if (tfodTrigger.equals(tfodLocalizer.update().detectedObjectLabel)) {
+        for ( String tfodTrigger : TfodIdleTriggers) {
+            if (tfodTrigger.equals(tfodLocalizer.getLastUpdate().detectedObjectLabel)) {
                 setMode(Mode.IDLE);
             }
         }

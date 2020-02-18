@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,9 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.drive.localizer.BrokeEncoderLocalizer;
-import org.firstinspires.ftc.teamcode.drive.localizer.ParallelThreeWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.mecanumsamples.SampleMecanumDriveBase;
-import org.firstinspires.ftc.teamcode.drive.opmode.tests.TensorFlowUtil;
+import org.firstinspires.ftc.teamcode.util.TensorFlowThread;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,8 +64,8 @@ public class MecanumDrive extends SampleMecanumDriveBase { //TODO: switch to Mec
         //add localizer
         setLocalizer(new BrokeEncoderLocalizer(hardwareMap));
 
-        tfodLocalizer = new TensorFlowUtil(hardwareMap);
-
+        tfodLocalizer = new TensorFlowThread(hardwareMap);
+        tfodLocalizer.start();
     }
 
     @Override

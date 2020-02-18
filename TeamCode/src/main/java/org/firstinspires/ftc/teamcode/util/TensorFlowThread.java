@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.teamcode.drive.opmode.tests;
+package org.firstinspires.ftc.teamcode.util;
+
+import android.os.Handler;
+import android.util.Log;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -13,7 +15,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-public class TensorFlowUtil {
+public class TensorFlowThread extends Thread {
+
+    public static final String TAG = "TensorThread";
 
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Stone";
@@ -25,10 +29,16 @@ public class TensorFlowUtil {
     private TFObjectDetector tfod;
     private VuforiaLocalizer vuforia;
 
-    public TensorFlowUtil(HardwareMap hardwareMap) {
-        activateTfod(hardwareMap);
+    private TensorFlowReturn lastUpdate = new TensorFlowReturn(0,0,0,0,70,false,"");
+
+    public TensorFlowReturn getLastUpdate() {
+        return lastUpdate;
     }
 
+    //Cu override
+    public TensorFlowThread(HardwareMap hardwareMap) {
+        activateTfod(hardwareMap);
+    }
 
     @Override
     protected void finalize() throws Throwable {
@@ -36,18 +46,22 @@ public class TensorFlowUtil {
         closeTfod();
     }
 
+    @Override
+    public void run() {
+        while(this.isAlive()){
+            this.lastUpdate = update();
+        }
+    }
 
+    //Non-generated
     public TensorFlowReturn update(){
         if (tfod != null) {
-            double lastTop = 0, lastBottom = 0, lastRight = 0, lastLeft = 0, lastAngle = 0;
-            boolean hasRecognised = false;
-            String lastLabel = "";
+            double lastTop = lastUpdate.top, lastBottom = lastUpdate.bottom, lastRight = lastUpdate.right, lastLeft = lastUpdate.left, lastAngle = lastUpdate.approxAngle;
+            boolean hasRecognised = lastUpdate.hasDetectedObject;
+            String lastLabel = lastUpdate.detectedObjectLabel;
 
-            // getUpdatedRecognitions() will return null if no new information is available since
-            // the last time that call was made.
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
-                int i = 0;
                 for (Recognition recognition : updatedRecognitions) {
                     lastTop = recognition.getTop();
                     lastBottom = recognition.getBottom();
@@ -65,7 +79,7 @@ public class TensorFlowUtil {
         return null;
     }
 
-    public TensorFlowReturn update(TelemetryPacket packet){
+    private TensorFlowReturn update(TelemetryPacket packet){
         if (tfod != null) {
             double lastTop = 0, lastBottom = 0, lastRight = 0, lastLeft = 0, lastAngle = 0;
             boolean hasRecognised = false;
@@ -111,9 +125,6 @@ public class TensorFlowUtil {
 
     }
 
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
     private void initTfod(HardwareMap hardwareMap) {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -123,7 +134,7 @@ public class TensorFlowUtil {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 
-    public void activateTfod(HardwareMap hardwareMap){
+    private void activateTfod(HardwareMap hardwareMap){
         initVuforia();
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
@@ -135,9 +146,12 @@ public class TensorFlowUtil {
         }
     }
 
-    public void closeTfod(){
+    private void closeTfod(){
         if (tfod != null) {
             tfod.shutdown();
         }
     }
+
+
+
 }
