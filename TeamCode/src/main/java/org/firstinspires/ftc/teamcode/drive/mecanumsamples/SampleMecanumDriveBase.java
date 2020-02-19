@@ -33,7 +33,6 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /*
  * Base class with shared functionality for sample mecanum drives. All hardware-specific details are
@@ -165,12 +164,12 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());
         packet.put("headingError", lastError.getHeading());
-        packet.put("found object", tfodLocalizer.getLastUpdate().hasDetectedObject);
-        packet.put("found angle", tfodLocalizer.getLastUpdate().approxAngle);
+        packet.put("found object", tfodLocalizer.getLastTfodData().hasDetectedObject);
+        packet.put("found angle", tfodLocalizer.getLastTfodData().approxAngle);
 
 
         for ( String tfodTrigger : TfodIdleTriggers) {
-            if (tfodTrigger.equals(tfodLocalizer.getLastUpdate().detectedObjectLabel)) {
+            if (tfodTrigger.equals(tfodLocalizer.getLastTfodData().detectedObjectLabel)) {
                 setMode(Mode.IDLE);
             }
         }

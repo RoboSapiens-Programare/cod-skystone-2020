@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -26,11 +25,24 @@ public class TensorFlowThread extends Thread {
     private TFObjectDetector tfod;
     private VuforiaLocalizer vuforia;
 
-    private TensorFlowReturn lastUpdate = new TensorFlowReturn(0,0,0,0,70,false,"");
+    /*
+    *   Not quite good practice, but these are the variables that modify
+    */
+    private TensorFlowReturn lastTfodData = new TensorFlowReturn(0,0,0,0,0,false,"");
+    private List<SkyStone> detectedSkyStones = new ArrayList<>();
+    /*
+    *   Getters follow
+    */
 
-    public TensorFlowReturn getLastUpdate() {
-        return lastUpdate;
+
+    public TensorFlowReturn getLastTfodData() {
+        return lastTfodData;
     }
+    public List<SkyStone> getDetectedSkyStones(){
+        return detectedSkyStones;
+    }
+
+
 
     //Cu override
     public TensorFlowThread(HardwareMap hardwareMap) {
@@ -43,19 +55,23 @@ public class TensorFlowThread extends Thread {
         closeTfod();
     }
 
+    //Dis the RUN method
     @Override
     public void run() {
         while(this.isAlive()){
-            this.lastUpdate = update();
+            this.lastTfodData = rawTfodData();
+            this.detectedSkyStones = findSkystone(true); //TODO: trebuie sa gasim o varianta non-case based
         }
+
+        closeTfod();
     }
 
     //Non-generated
-    public TensorFlowReturn update(){
+    public TensorFlowReturn rawTfodData(){
         if (tfod != null) {
-            double lastTop = lastUpdate.top, lastBottom = lastUpdate.bottom, lastRight = lastUpdate.right, lastLeft = lastUpdate.left, lastAngle = lastUpdate.approxAngle;
-            boolean hasRecognised = lastUpdate.hasDetectedObject;
-            String lastLabel = lastUpdate.detectedObjectLabel;
+            double lastTop = lastTfodData.top, lastBottom = lastTfodData.bottom, lastRight = lastTfodData.right, lastLeft = lastTfodData.left, lastAngle = lastTfodData.approxAngle;
+            boolean hasRecognised = lastTfodData.hasDetectedObject;
+            String lastLabel = lastTfodData.detectedObjectLabel;
 
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
@@ -76,48 +92,14 @@ public class TensorFlowThread extends Thread {
         return null;
     }
 
-    private TensorFlowReturn update(TelemetryPacket packet){
-        if (tfod != null) {
-            double lastTop = 0, lastBottom = 0, lastRight = 0, lastLeft = 0, lastAngle = 0;
-            boolean hasRecognised = false;
-            String lastLabel = "";
-
-            // getUpdatedRecognitions() will return null if no new information is available since
-            // the last time that call was made.
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                packet.put("# Object Detected", updatedRecognitions.size());
-
-
-                // step through the list of recognitions and display boundary info.
-                int i = 0;
-                for (Recognition recognition : updatedRecognitions) {
-                    packet.put(String.format("label (%d)", i), recognition.getLabel());
-                    packet.put("left, top", recognition.getLeft() + ", " + recognition.getTop());
-                    packet.put("right, bottom", recognition.getRight() + ", " + recognition.getBottom());
-
-                    lastTop = recognition.getTop();
-                    lastBottom = recognition.getBottom();
-                    lastRight = recognition.getRight();
-                    lastLeft = recognition.getLeft();
-                    lastLabel = recognition.getLabel();
-                    lastAngle = recognition.estimateAngleToObject(AngleUnit.RADIANS);
-                    hasRecognised = true;
-                }
-            }
-
-            return new TensorFlowReturn(lastTop, lastLeft, lastRight, lastBottom, lastAngle, hasRecognised, lastLabel);
-        }
-
-        return null;
-    }
-
-    private List<SkyStone> FindSkystone(boolean isBlueSide){
+    private List<SkyStone> findSkystone(boolean isBlueSide){
         if (tfod != null) {
 
+            //get tfod recognitions
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
-            if (updatedRecognitions.size() != 3) {
+            //we need 3 recognition to determine where the skystone is
+            if (updatedRecognitions.size() >= 3) {
 
                 float PosSkystone = 0;
                 int LeftOfSkystone = 0;
@@ -128,7 +110,7 @@ public class TensorFlowThread extends Thread {
                    }
                 }
                 for (Recognition recognition : updatedRecognitions) {
-                    if (recognition.getLabel().equals("SkyStone")){
+                    if (recognition.getLabel().equals("Stone")){
                         if (recognition.getRight() < PosSkystone){
                             LeftOfSkystone++;
                         }
