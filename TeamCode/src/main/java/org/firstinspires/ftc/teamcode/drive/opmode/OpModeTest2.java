@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous(group = "drive")
-public class OpModeTest extends LinearOpMode {
+public class OpModeTest2 extends LinearOpMode {
     //public static double DISTANCE = 60;
     public static double FOAM_TILE_CM = 23.622;
 
@@ -23,20 +23,8 @@ public class OpModeTest extends LinearOpMode {
 
         drive.getLocalizer().setPoseEstimate(new Pose2d(1.5 * FOAM_TILE_CM, 2.5 * FOAM_TILE_CM, Math.toRadians(-90)));
 
-        Trajectory trajectory1 = drive.trajectoryBuilder()
-                .strafeTo(new Vector2d(1.5 * FOAM_TILE_CM, 0))
-                .build();
 
 
-        //TODO STRATEGIE 1
-        //Pornim cat sa vedem 3 cele mai din dr stonuri
-        //Stim din init pozitia skystonurilor
-        //Hardcodeala?
-
-        //TODO STRATEGIE 2
-        //Pornim cu tel in fata celui mai din dr stone
-        //Mergem o anumita distanta in fata (1 FOAM_TILE_CM)
-        //Strafa stanga pana vad un skysotme
 
         waitForStart();
 
@@ -47,9 +35,6 @@ public class OpModeTest extends LinearOpMode {
         Triggers.add("SkyStone");
 
         drive.setTfodIdleTriggers(Triggers);
-        drive.followTrajectorySync(trajectory1);
-        drive.waitForIdle();
-
         drive.clearTfodIdleTriggers();
 
     }

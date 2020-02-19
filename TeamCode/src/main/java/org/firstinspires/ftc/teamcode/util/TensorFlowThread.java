@@ -1,18 +1,15 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import android.os.Handler;
-import android.util.Log;
-
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TensorFlowThread extends Thread {
@@ -20,8 +17,8 @@ public class TensorFlowThread extends Thread {
     public static final String TAG = "TensorThread";
 
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
-    private static final String LABEL_FIRST_ELEMENT = "Stone";
-    private static final String LABEL_SECOND_ELEMENT = "Skystone";
+    private static final String LABEL_FIRST_ELEMENT = "SkyStone";
+    private static final String LABEL_SECOND_ELEMENT = "SkyStone";
 
     private static final String VUFORIA_KEY =
             "AYlEu/7/////AAABmXB1kirNm0vlrZa4DCCmkis6ZNJkEkHGNYjIfoKWcK+yxnJOhuC4Lw3B63L+Y5vrSoTsr1mEe6bvGcMR8Hg+v1Z1Cih0IrBRHdIfrrg6lfa723ft/unZOKgck3ftCj8gWuiM89d+A4smkenUI5P/HXMKMGKCk4xxv5of9YNSX8r4KFO8lD+bqYgnP+GVXzD/TwQo7Dqer3bf0HVbOqP6j6HREHAZdP6Idg/JwyRG8LSdC6ekTwogxCWsuWiaUhuC8uAQ4r/ZfJykZpXYCxhdcLwMM4OaUXkUAPuUenzxlL8MXkwOhsDfqiQNEfSB00BodWKq28EC6cc+Vsko8r9PreeU6jCYR4d84VK8uBFLGaJx";
@@ -114,6 +111,43 @@ public class TensorFlowThread extends Thread {
 
         return null;
     }
+
+    private List<SkyStone> FindSkystone(boolean isBlueSide){
+        if (tfod != null) {
+
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+
+            if (updatedRecognitions.size() != 3) {
+
+                float PosSkystone = 0;
+                int LeftOfSkystone = 0;
+
+                for (Recognition recognition : updatedRecognitions) {
+                   if (recognition.getLabel().equals("SkyStone")){
+                        PosSkystone = recognition.getRight();
+                   }
+                }
+                for (Recognition recognition : updatedRecognitions) {
+                    if (recognition.getLabel().equals("SkyStone")){
+                        if (recognition.getRight() < PosSkystone){
+                            LeftOfSkystone++;
+                        }
+                    }
+                }
+
+                List<SkyStone> stones = new ArrayList<>();
+
+                stones.add(new SkyStone(LeftOfSkystone, isBlueSide));
+                stones.add(new SkyStone(LeftOfSkystone + 3, isBlueSide));
+
+                return stones;
+            }
+
+        }
+
+        return new ArrayList<>();
+    }
+
 
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();

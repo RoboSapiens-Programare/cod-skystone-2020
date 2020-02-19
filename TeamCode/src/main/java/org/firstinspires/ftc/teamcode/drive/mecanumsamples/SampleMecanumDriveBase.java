@@ -26,12 +26,14 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.util.TensorFlowThread;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Base class with shared functionality for sample mecanum drives. All hardware-specific details are
@@ -68,6 +70,8 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
     private List<Double> lastWheelPositions;
     private double lastTimestamp;
 
+    private ElapsedTime timer;
+
     public TensorFlowThread tfodLocalizer; //plm cantaret armonios
 
     private List<String> TfodIdleTriggers = new ArrayList<>();
@@ -76,7 +80,7 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         TfodIdleTriggers = tfodIdleTriggers;
     }
 
-    public void clearTfodIdleTrigger(){
+    public void clearTfodIdleTriggers(){
         TfodIdleTriggers = new ArrayList<>();
     }
 
@@ -95,6 +99,8 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
 
         constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID);
+
+        timer = new ElapsedTime();
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
@@ -169,9 +175,12 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
             }
         }
 
+
+
         switch (mode) {
             case IDLE:
-                // do nothing
+                //do nothing
+                setMotorPowers(0,0,0,0);
                 break;
             case TURN: {
                 double t = clock.seconds() - turnStart;
