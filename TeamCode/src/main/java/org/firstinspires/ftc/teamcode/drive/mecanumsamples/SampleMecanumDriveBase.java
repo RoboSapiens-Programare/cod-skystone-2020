@@ -28,7 +28,7 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.util.TensorFlowThread;
+import org.firstinspires.ftc.teamcode.drive.localizer.vision.TensorFlowThread;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
@@ -69,8 +69,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
     private List<Double> lastWheelPositions;
     private double lastTimestamp;
 
-    private ElapsedTime timer;
-
     public TensorFlowThread tfodLocalizer; //plm cantaret armonios
 
     private List<String> TfodIdleTriggers = new ArrayList<>();
@@ -99,7 +97,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID);
 
-        timer = new ElapsedTime();
     }
 
     public TrajectoryBuilder trajectoryBuilder() {

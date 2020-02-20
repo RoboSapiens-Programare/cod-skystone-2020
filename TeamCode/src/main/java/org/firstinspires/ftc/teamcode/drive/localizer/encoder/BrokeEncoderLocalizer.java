@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.localizer;
+package org.firstinspires.ftc.teamcode.drive.localizer.encoder;
 
 import android.support.annotation.NonNull;
 
