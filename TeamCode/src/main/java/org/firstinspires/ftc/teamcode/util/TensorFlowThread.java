@@ -16,13 +16,13 @@ public class TensorFlowThread extends Thread {
     public static final String TAG = "TensorThread";
 
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
-    private static final String LABEL_FIRST_ELEMENT = "SkyStone";
+    private static final String LABEL_FIRST_ELEMENT = "Stone";
     private static final String LABEL_SECOND_ELEMENT = "SkyStone";
 
     private static final String VUFORIA_KEY =
             "AYlEu/7/////AAABmXB1kirNm0vlrZa4DCCmkis6ZNJkEkHGNYjIfoKWcK+yxnJOhuC4Lw3B63L+Y5vrSoTsr1mEe6bvGcMR8Hg+v1Z1Cih0IrBRHdIfrrg6lfa723ft/unZOKgck3ftCj8gWuiM89d+A4smkenUI5P/HXMKMGKCk4xxv5of9YNSX8r4KFO8lD+bqYgnP+GVXzD/TwQo7Dqer3bf0HVbOqP6j6HREHAZdP6Idg/JwyRG8LSdC6ekTwogxCWsuWiaUhuC8uAQ4r/ZfJykZpXYCxhdcLwMM4OaUXkUAPuUenzxlL8MXkwOhsDfqiQNEfSB00BodWKq28EC6cc+Vsko8r9PreeU6jCYR4d84VK8uBFLGaJx";
 
-    private TFObjectDetector tfod;
+    public TFObjectDetector tfod;
     private VuforiaLocalizer vuforia;
 
     /*
@@ -45,10 +45,12 @@ public class TensorFlowThread extends Thread {
 
 
     //Cu override
+    //Constructor
     public TensorFlowThread(HardwareMap hardwareMap) {
         activateTfod(hardwareMap);
     }
 
+    //Destructor
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
@@ -60,7 +62,7 @@ public class TensorFlowThread extends Thread {
     public void run() {
         while(this.isAlive()){
             this.lastTfodData = rawTfodData();
-            this.detectedSkyStones = findSkystone(true); //TODO: trebuie sa gasim o varianta non-case based
+            this.detectedSkyStones = findSkystone(false); //TODO: trebuie sa gasim o varianta non-case based
         }
 
         closeTfod();
@@ -99,28 +101,34 @@ public class TensorFlowThread extends Thread {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
             //we need 3 recognition to determine where the skystone is
-            if (updatedRecognitions.size() >= 3) {
+            if (updatedRecognitions != null && updatedRecognitions.size() >= 2) {
 
-                float PosSkystone = 0;
-                int LeftOfSkystone = 0;
+                int PosSkystone = 0;
+                float skystoneRight = 0;
+                float stoneRight = 0;
+                boolean skystoneExists = false;
 
                 for (Recognition recognition : updatedRecognitions) {
                    if (recognition.getLabel().equals("SkyStone")){
-                        PosSkystone = recognition.getRight();
+                        skystoneExists = true;
+                        skystoneRight = recognition.getRight();
                    }
-                }
-                for (Recognition recognition : updatedRecognitions) {
                     if (recognition.getLabel().equals("Stone")){
-                        if (recognition.getRight() < PosSkystone){
-                            LeftOfSkystone++;
-                        }
+                        stoneRight = recognition.getRight();
                     }
+                }
+
+                if(!skystoneExists){
+                    PosSkystone = 3;
+                }
+                else {
+                    PosSkystone = isBlueSide? stoneRight < skystoneRight? 2 : 1 : stoneRight < skystoneRight? 1 : 2;
                 }
 
                 List<SkyStone> stones = new ArrayList<>();
 
-                stones.add(new SkyStone(LeftOfSkystone, isBlueSide));
-                stones.add(new SkyStone(LeftOfSkystone + 3, isBlueSide));
+                stones.add(new SkyStone(PosSkystone, isBlueSide));
+                stones.add(new SkyStone(PosSkystone + 3, isBlueSide));
 
                 return stones;
             }
