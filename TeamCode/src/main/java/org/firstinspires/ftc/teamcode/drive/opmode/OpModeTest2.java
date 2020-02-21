@@ -40,63 +40,64 @@ public class OpModeTest2 extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        //STRATEGIE 1
+        //STRATEGIE 2
+
+//        while (opModeIsActive()){
+//            telemetry.addData("found skystone", robot.drive.vuforiaLocalizer.isTargetVisible());
+//            if(robot.drive.vuforiaLocalizer.isTargetVisible()) {
+//                telemetry.addData("x", robot.drive.vuforiaLocalizer.getSkystoneOffset().getX());
+//                telemetry.addData("y", robot.drive.vuforiaLocalizer.getSkystoneOffset().getY());
+//                telemetry.addData("angle", robot.drive.vuforiaLocalizer.getSkystoneOffset().getHeading());
+//            }
+//            telemetry.update();
+//        }
+
+
 
         //Position the robot
-        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5* FOAM_TILE_INCH, -2.5* FOAM_TILE_INCH, Math.toRadians(180)));
+        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5* FOAM_TILE_INCH, -2.5* FOAM_TILE_INCH, Math.toRadians(90)));
 
-        //Array of found stones
-        List<SkyStone> skystones = new ArrayList<>();
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
+                                                .lineTo(new Vector2d(-1.5 *FOAM_TILE_INCH, -2*FOAM_TILE_INCH))
+                                                .build());
 
 
+        boolean found = false;
 
-        //Wait until we get the position of the skystones or TODO: time has passed
-        while(skystones.size() == 0){
-            //do nothing
-            telemetry.addData("label", robot.drive.tfodLocalizer.getLastTfodData().detectedObjectLabel);
-            telemetry.addData("Recognitions", robot.drive.tfodLocalizer.tfod.getRecognitions().size());
-            for(Recognition rec : robot.drive.tfodLocalizer.tfod.getRecognitions())
-                telemetry.addData("rec ", rec.getLabel());
-
-            telemetry.update();
-            skystones = robot.drive.tfodLocalizer.getDetectedSkyStones();
+        //get skystone
+        while (!found){
+            found = robot.drive.vuforiaLocalizer.isTargetVisible();
             idle();
         }
 
-
-        for(SkyStone skyStone : skystones) {
-            //Create the trajectory to the skystones
-            Trajectory pathToSkystone = robot.drive.trajectoryBuilder()
-                    .strafeTo(skyStone.getRobotTargetLocation()) //TODO: maybe switch to spline
-                    .build();
+        robot.drive.setMode(SampleMecanumDriveBase.Mode.IDLE);
 
 
+        Vector2d absoluteSkystoneLocation = new Vector2d(robot.drive.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
+                                                         -robot.drive.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY());
 
-            robot.drive.followTrajectorySync(pathToSkystone);
-            robot.drive.waitForIdle();
+        robot.drive.turnSync(Math.toRadians(90));
 
-            sleep(500);
+        Trajectory robotToSkystone = robot.drive.trajectoryBuilder()
+                .strafeTo(absoluteSkystoneLocation)
+                .build();
 
-            //TODO: Dam bratul jos
-            robot.skystoneArm.ArmDown();
+        //go to skystone
+        robot.drive.followTrajectorySync(robotToSkystone);
 
-            sleep(500);
+        sleep(500);
+        robot.skystoneArm.ArmDown();
 
-            //Drag them to the building zone
-            Trajectory pathToBuildingZone = robot.drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(1* FOAM_TILE_INCH, -2* FOAM_TILE_INCH, 0))
-                    .build();
-
-            robot.drive.followTrajectorySync(pathToBuildingZone);
-            robot.drive.waitForIdle();
-
-            //TODO: Dam bratul sus
-            robot.skystoneArm.ArmUp();
+        sleep(500);
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().strafeTo(new Vector2d(-1 * FOAM_TILE_INCH, -2 * FOAM_TILE_INCH)).build());
+        robot.drive.turnSync(Math.toRadians(180));
 
 
-        }
+        sleep(500);
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
+                .splineTo(new Pose2d(0.5*FOAM_TILE_INCH, -2*FOAM_TILE_INCH, Math.toRadians(0)))
+                .build());
 
-
-
+        robot.skystoneArm.ArmUp();
     }
 }

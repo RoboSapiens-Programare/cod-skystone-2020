@@ -37,61 +37,61 @@ public class OpModeTest extends LinearOpMode {
 
         //STRATEGIE 1
 
-        //Position the robot
-        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5* FOAM_TILE_INCH, -2.5* FOAM_TILE_INCH, Math.toRadians(90)));
-
-        //Array of found stones
-        List<SkyStone> skystones = new ArrayList<>();
-
-        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(FOAM_TILE_INCH/3).build());
-        robot.drive.waitForIdle();
-
-        //Wait until we get the position of the skystones or TODO: time has passed
-        while(skystones.size() == 0){
-            //do nothing
-            telemetry.addData("label", robot.drive.tfodLocalizer.getLastTfodData().detectedObjectLabel);
-            telemetry.addData("Recognitions", robot.drive.tfodLocalizer.tfod.getRecognitions().size());
-            for(Recognition rec : robot.drive.tfodLocalizer.tfod.getRecognitions())
-                telemetry.addData("rec ", rec.getLabel());
-
-            telemetry.update();
-            skystones = robot.drive.tfodLocalizer.getDetectedSkyStones();
-            idle();
-        }
-
-        for(SkyStone skyStone : skystones) {
-            //Create the trajectory to the skystones
-            Trajectory pathToSkystone = robot.drive.trajectoryBuilder()
-                   .splineTo(new Pose2d(skyStone.getRobotTargetLocation(), Math.toRadians(180))) //TODO: maybe switch to spline
-                   .build();
-
-
-
-            robot.drive.followTrajectorySync(pathToSkystone);
-            robot.drive.waitForIdle();
-            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().strafeTo(skyStone.getLocation()).build());
-            robot.drive.waitForIdle();
-
-            sleep(500);
-
-            //TODO: Dam bratul jos
-            robot.skystoneArm.ArmDown();
-
-            sleep(500);
-
-            //Drag them to the building zone
-            Trajectory pathToBuildingZone = robot.drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(1* FOAM_TILE_INCH, -2* FOAM_TILE_INCH, 0))
-                    .build();
-
-            robot.drive.followTrajectorySync(pathToBuildingZone);
-            robot.drive.waitForIdle();
-
-            //TODO: Dam bratul sus
-            robot.skystoneArm.ArmUp();
-
-
-        }
+//        //Position the robot
+//        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5* FOAM_TILE_INCH, -2.5* FOAM_TILE_INCH, Math.toRadians(90)));
+//
+//        //Array of found stones
+//        List<SkyStone> skystones = new ArrayList<>();
+//
+//        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(FOAM_TILE_INCH/3).build());
+//        robot.drive.waitForIdle();
+//
+//        //Wait until we get the position of the skystones or TODO: time has passed
+//        while(skystones.size() == 0){
+//            //do nothing
+//            telemetry.addData("label", robot.drive.tfodLocalizer.getLastTfodData().detectedObjectLabel);
+//            telemetry.addData("Recognitions", robot.drive.tfodLocalizer.tfod.getRecognitions().size());
+//            for(Recognition rec : robot.drive.tfodLocalizer.tfod.getRecognitions())
+//                telemetry.addData("rec ", rec.getLabel());
+//
+//            telemetry.update();
+//            skystones = robot.drive.tfodLocalizer.getDetectedSkyStones();
+//            idle();
+//        }
+//
+//        for(SkyStone skyStone : skystones) {
+//            //Create the trajectory to the skystones
+//            Trajectory pathToSkystone = robot.drive.trajectoryBuilder()
+//                   .splineTo(new Pose2d(skyStone.getRobotTargetLocation(), Math.toRadians(180))) //TODO: maybe switch to spline
+//                   .build();
+//
+//
+//
+//            robot.drive.followTrajectorySync(pathToSkystone);
+//            robot.drive.waitForIdle();
+//            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().strafeTo(skyStone.getLocation()).build());
+//            robot.drive.waitForIdle();
+//
+//            sleep(500);
+//
+//            //TODO: Dam bratul jos
+//            robot.skystoneArm.ArmDown();
+//
+//            sleep(500);
+//
+//            //Drag them to the building zone
+//            Trajectory pathToBuildingZone = robot.drive.trajectoryBuilder()
+//                    .splineTo(new Pose2d(1* FOAM_TILE_INCH, -2* FOAM_TILE_INCH, 0))
+//                    .build();
+//
+//            robot.drive.followTrajectorySync(pathToBuildingZone);
+//            robot.drive.waitForIdle();
+//
+//            //TODO: Dam bratul sus
+//            robot.skystoneArm.ArmUp();
+//
+//
+//        }
 
 
 

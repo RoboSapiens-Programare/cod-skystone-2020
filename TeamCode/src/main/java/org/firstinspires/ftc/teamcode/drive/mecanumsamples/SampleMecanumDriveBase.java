@@ -29,6 +29,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.localizer.vision.TensorFlowThread;
+import org.firstinspires.ftc.teamcode.drive.localizer.vision.VuforiaThread;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
@@ -69,7 +70,8 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
     private List<Double> lastWheelPositions;
     private double lastTimestamp;
 
-    public TensorFlowThread tfodLocalizer; //plm cantaret armonios
+    //public TensorFlowThread tfodLocalizer; //plm cantaret armonios
+    public VuforiaThread vuforiaLocalizer; //plm lampa de spanzurat 2 bucati
 
     private List<String> TfodIdleTriggers = new ArrayList<>();
 
@@ -161,15 +163,13 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());
         packet.put("headingError", lastError.getHeading());
-        packet.put("found object", tfodLocalizer.getLastTfodData().hasDetectedObject);
-        packet.put("found angle", tfodLocalizer.getLastTfodData().approxAngle);
 
 
-        for ( String tfodTrigger : TfodIdleTriggers) {
-            if (tfodTrigger.equals(tfodLocalizer.getLastTfodData().detectedObjectLabel)) {
-                setMode(Mode.IDLE);
-            }
-        }
+//        for ( String tfodTrigger : TfodIdleTriggers) {
+//            if (tfodTrigger.equals(tfodLocalizer.getLastTfodData().detectedObjectLabel)) {
+//                setMode(Mode.IDLE);
+//            }
+//        }
 
 
 
