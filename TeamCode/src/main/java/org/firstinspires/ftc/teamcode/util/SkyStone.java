@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.ROBOT_WIDTH;
-import static org.firstinspires.ftc.teamcode.drive.opmode.OpModeTest.FOAM_TILE_INCH;
+import static org.firstinspires.ftc.teamcode.drive.FieldConstants.FOAM_TILE_INCH;
 
 public class SkyStone {
     public static final double LENGHT = 8.0;

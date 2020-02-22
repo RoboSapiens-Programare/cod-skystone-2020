@@ -16,6 +16,8 @@ public class BrokeEncoderLocalizer extends TwoTrackingWheelLocalizer {
     public static double WHEEL_RADIUS = 2; // inch
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
+    public static double ENCODER_RATIO = 0.55; // ratio between left encoder ticks per rev and right encoder ticks per rev
+
     public static double LATERAL_DISTANCE = 13; // inch; distance between the left and right wheels
     public static double FORWARD_OFFSET = 0; // inch; offset of the lateral wheel
 
@@ -46,7 +48,7 @@ public class BrokeEncoderLocalizer extends TwoTrackingWheelLocalizer {
     public List<Double> getWheelPositions() {
         return Arrays.asList(
                 encoderTicksToInches(leftEncoder.getCurrentPosition()),
-                encoderTicksToInches(middleEncoder.getCurrentPosition())
+                encoderTicksToInches(middleEncoder.getCurrentPosition()) * ENCODER_RATIO //TODO: alternative solution to shitty encoders
         );
     }
 
