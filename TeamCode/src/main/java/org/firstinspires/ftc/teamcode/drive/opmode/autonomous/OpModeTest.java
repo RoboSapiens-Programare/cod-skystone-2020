@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.opmode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -59,12 +59,12 @@ public class OpModeTest extends LinearOpMode {
         boolean found = false;
 
         while (!found){
-            found = robot.drive.vuforiaLocalizer.isTargetVisible();
+            found = robot.vuforiaLocalizer.isTargetVisible();
             idle();
         }
 
-        Vector2d absoluteSkystoneLocation = new Vector2d(robot.drive.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
-                -robot.drive.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
+        Vector2d absoluteSkystoneLocation = new Vector2d(robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
+                -robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
 
         Trajectory robotToSkystone = robot.drive.trajectoryBuilder()
                 .strafeTo(absoluteSkystoneLocation)
@@ -96,12 +96,12 @@ public class OpModeTest extends LinearOpMode {
         found = false;
 
         while (!found){
-            found = robot.drive.vuforiaLocalizer.isTargetVisible();
+            found = robot.vuforiaLocalizer.isTargetVisible();
             idle();
         }
 
-        absoluteSkystoneLocation = new Vector2d(robot.drive.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
-                -robot.drive.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
+        absoluteSkystoneLocation = new Vector2d(robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
+                -robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
 
         robotToSkystone = robot.drive.trajectoryBuilder()
                 .strafeTo(absoluteSkystoneLocation)

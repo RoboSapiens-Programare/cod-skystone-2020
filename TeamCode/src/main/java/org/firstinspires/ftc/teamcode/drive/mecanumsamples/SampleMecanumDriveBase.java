@@ -70,18 +70,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
     private List<Double> lastWheelPositions;
     private double lastTimestamp;
 
-    //public TensorFlowThread tfodLocalizer; //plm cantaret armonios
-    public VuforiaThread vuforiaLocalizer; //plm lampa de spanzurat 2 bucati
-
-    private List<String> TfodIdleTriggers = new ArrayList<>();
-
-    public void setTfodIdleTriggers(List<String> tfodIdleTriggers) {
-        TfodIdleTriggers = tfodIdleTriggers;
-    }
-
-    public void clearTfodIdleTriggers(){
-        TfodIdleTriggers = new ArrayList<>();
-    }
 
     public SampleMecanumDriveBase() {
         super(kV, kA, kStatic, TRACK_WIDTH);

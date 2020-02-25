@@ -64,12 +64,6 @@ public class MecanumDrive extends SampleMecanumDriveBase { //TODO: switch to Mec
 
         //add localizer
         setLocalizer(new BrokeEncoderLocalizer(hardwareMap));
-
-        //tfodLocalizer = new TensorFlowThread(hardwareMap);
-        //tfodLocalizer.start();
-
-        vuforiaLocalizer = new VuforiaThread(hardwareMap);
-        vuforiaLocalizer.start();
     }
 
     @Override
