@@ -25,8 +25,9 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.ROBOT_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.FieldConstants.FOAM_TILE_INCH;
 
 @Autonomous(group = "drive")
-public class OpModeTest extends LinearOpMode {
-    //public static double DISTANCE = 60;
+public class RedSkystone extends LinearOpMode {
+    public static int MAX_MILISECONDS = 3000;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,21 +51,36 @@ public class OpModeTest extends LinearOpMode {
         robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5* FOAM_TILE_INCH, -2.5* FOAM_TILE_INCH, Math.toRadians(90)));
 
         robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
-                .lineTo(new Vector2d(-1.5 *FOAM_TILE_INCH, -1.9*FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(90), Math.toRadians(90)))
+                .lineTo(new Vector2d(-1.5 *FOAM_TILE_INCH, -1.8*FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(90), Math.toRadians(-90)))
                 .build());
 
         //Get skystone
         robot.drive.setMode(SampleMecanumDriveBase.Mode.IDLE);
 
         boolean found = false;
+        robot.timer.reset();
 
-        while (!found){
+        while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
             found = robot.vuforiaLocalizer.isTargetVisible();
             idle();
         }
 
-        Vector2d absoluteSkystoneLocation = new Vector2d(robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
-                -robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
+        Vector2d absoluteSkystoneLocation;
+
+
+        if(!found){
+            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().back(14).build());
+        }
+
+        while(!found){
+            found = robot.vuforiaLocalizer.isTargetVisible();
+            idle();
+        }
+
+        absoluteSkystoneLocation = new Vector2d(robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
+                            -robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
+
+
 
         Trajectory robotToSkystone = robot.drive.trajectoryBuilder()
                 .strafeTo(absoluteSkystoneLocation)
@@ -80,8 +96,8 @@ public class OpModeTest extends LinearOpMode {
 
         Pose2d robotpose = robot.drive.getLocalizer().getPoseEstimate();
 
-        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(240)))
-                .splineTo(new Pose2d(0.5*FOAM_TILE_INCH, -2*FOAM_TILE_INCH, Math.toRadians(0)), new ConstantInterpolator(Math.toRadians(180)))
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(250)))
+                .splineTo(new Pose2d(0.5*FOAM_TILE_INCH, -2.2*FOAM_TILE_INCH, Math.toRadians(0)), new ConstantInterpolator(Math.toRadians(0)))
                 .build());
 
         robot.skystoneArm.ArmUp();
@@ -89,19 +105,31 @@ public class OpModeTest extends LinearOpMode {
         sleep (500);
 
         robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
-                .lineTo(new Vector2d(-2*FOAM_TILE_INCH, -2*FOAM_TILE_INCH), new ConstantInterpolator(Math.toRadians(180)))
+                .lineTo(new Vector2d(-2*FOAM_TILE_INCH, -1.7*FOAM_TILE_INCH), new ConstantInterpolator(Math.toRadians(0)))
                 .build());
 
 
         found = false;
+        robot.timer.reset();
 
-        while (!found){
+        while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
+            found = robot.vuforiaLocalizer.isTargetVisible();
+            idle();
+        }
+
+        if(!found){
+            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().back(14).build());
+        }
+
+        while(!found){
             found = robot.vuforiaLocalizer.isTargetVisible();
             idle();
         }
 
         absoluteSkystoneLocation = new Vector2d(robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
-                -robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
+                    -robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() - (ROBOT_WIDTH / 2));
+
+
 
         robotToSkystone = robot.drive.trajectoryBuilder()
                 .strafeTo(absoluteSkystoneLocation)
@@ -118,7 +146,7 @@ public class OpModeTest extends LinearOpMode {
         robotpose = robot.drive.getLocalizer().getPoseEstimate();
 
         robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(240)))
-                .splineTo(new Pose2d(0.5*FOAM_TILE_INCH, -2*FOAM_TILE_INCH, Math.toRadians(0)), new ConstantInterpolator(Math.toRadians(180)))
+                .splineTo(new Pose2d(0.5*FOAM_TILE_INCH, -2*FOAM_TILE_INCH, Math.toRadians(0)), new ConstantInterpolator(Math.toRadians(0)))
                 .build());
 
         robot.skystoneArm.ArmUp();

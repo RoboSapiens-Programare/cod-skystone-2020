@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.localizer.vision.VuforiaThread;
 
@@ -13,6 +14,10 @@ public class Robot {
     public MecanumDrive drive;
     public SkystoneArm skystoneArm;
     public VuforiaThread vuforiaLocalizer;
+    public IntakeMechanism intakeMechanism;
+
+    //Utils
+    public ElapsedTime timer;
 
     //Constructor with vuforia by default
     public Robot(HardwareMap hardwareMap) {
@@ -21,8 +26,11 @@ public class Robot {
         drive = new MecanumDrive(hardwareMap);
         skystoneArm = new SkystoneArm(hardwareMap);
         vuforiaLocalizer = new VuforiaThread(hardwareMap);
+        intakeMechanism = new IntakeMechanism(hardwareMap);
 
         vuforiaLocalizer.start();
+
+        timer = new ElapsedTime();
 
         initializing = false;
     }
@@ -33,11 +41,14 @@ public class Robot {
 
         drive = new MecanumDrive(hardwareMap);
         skystoneArm = new SkystoneArm(hardwareMap);
+        intakeMechanism = new IntakeMechanism(hardwareMap);
 
         if(!suppressVuforia) {
             vuforiaLocalizer = new VuforiaThread(hardwareMap);
             vuforiaLocalizer.start();
         }
+
+        timer = new ElapsedTime();
 
         initializing = false;
     }
