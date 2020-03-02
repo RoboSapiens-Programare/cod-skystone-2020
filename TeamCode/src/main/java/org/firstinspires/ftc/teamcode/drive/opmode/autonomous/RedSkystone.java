@@ -48,10 +48,10 @@ public class RedSkystone extends LinearOpMode {
         if (isStopRequested()) return;
 
         //Position the robot
-        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5* FOAM_TILE_INCH, -2.5* FOAM_TILE_INCH, Math.toRadians(90)));
+        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5* FOAM_TILE_INCH, -2.6* FOAM_TILE_INCH, Math.toRadians(90)));
 
         robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
-                .lineTo(new Vector2d(-1.5 *FOAM_TILE_INCH, -1.8*FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(90), Math.toRadians(-90)))
+                .lineTo(new Vector2d(-1.3 *FOAM_TILE_INCH, -2*FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(90), Math.toRadians(-90)))
                 .build());
 
         //Get skystone
@@ -69,7 +69,7 @@ public class RedSkystone extends LinearOpMode {
 
 
         if(!found){
-            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().back(14).build());
+            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(10).build());
         }
 
         while(!found){
@@ -105,12 +105,14 @@ public class RedSkystone extends LinearOpMode {
         sleep (500);
 
         robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
-                .lineTo(new Vector2d(-2*FOAM_TILE_INCH, -1.7*FOAM_TILE_INCH), new ConstantInterpolator(Math.toRadians(0)))
+                .lineTo(new Vector2d(-2*FOAM_TILE_INCH, -1.85*FOAM_TILE_INCH), new ConstantInterpolator(Math.toRadians(0)))
                 .build());
 
 
         found = false;
+        sleep(1000);
         robot.timer.reset();
+        //robot.vuforiaLocalizer.clearSkystoneCache();
 
         while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
             found = robot.vuforiaLocalizer.isTargetVisible();
@@ -145,11 +147,13 @@ public class RedSkystone extends LinearOpMode {
 
         robotpose = robot.drive.getLocalizer().getPoseEstimate();
 
-        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(240)))
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(250)))
                 .splineTo(new Pose2d(0.5*FOAM_TILE_INCH, -2*FOAM_TILE_INCH, Math.toRadians(0)), new ConstantInterpolator(Math.toRadians(0)))
                 .build());
 
         robot.skystoneArm.ArmUp();
+
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().lineTo(new Vector2d(-0.25*FOAM_TILE_INCH, -1.5*FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(0), Math.toRadians(-90))).build());
 
     }
 }

@@ -230,7 +230,7 @@ public class VuforiaThread extends Thread {
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
         final float CAMERA_FORWARD_DISPLACEMENT  = 200.0f;   // eg: Camera is 4 Inches in front of robot center
         final float CAMERA_VERTICAL_DISPLACEMENT = 130;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = 170.0f;     // eg: Camera is ON the robot's center line
+        final float CAMERA_LEFT_DISPLACEMENT     = 195.0f;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -293,5 +293,10 @@ public class VuforiaThread extends Thread {
                 targetVisible = false;
             }
         }
+    }
+
+    public void clearSkystoneCache(){
+        allTrackables = new ArrayList<>();
+        targetVisible = false;
     }
 }

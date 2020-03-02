@@ -17,6 +17,8 @@ import static org.firstinspires.ftc.teamcode.drive.opmode.autonomous.RedSkystone
 
 @Autonomous(group = "drive")
 public class BlueSkystone extends LinearOpMode {
+    private static final double OFFSET_SKYSTONE_CV = 1.9;
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData(">", "Initializing...");
@@ -36,17 +38,16 @@ public class BlueSkystone extends LinearOpMode {
         if (isStopRequested()) return;
 
         //Position the robot
-        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5 * FOAM_TILE_INCH, 2.5 * FOAM_TILE_INCH, Math.toRadians(270)));
+        robot.drive.getLocalizer().setPoseEstimate(new Pose2d(-1.5 * FOAM_TILE_INCH, 2.7 * FOAM_TILE_INCH, Math.toRadians(270)));
 
         robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
-                .lineTo(new Vector2d(-1.5 * FOAM_TILE_INCH, 1.8 * FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(270), Math.toRadians(-90)))
+                .lineTo(new Vector2d(-1.3 * FOAM_TILE_INCH, 1.9 * FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(270), Math.toRadians(-90)))
                 .build());
 
         //Get skystone
         robot.drive.setMode(SampleMecanumDriveBase.Mode.IDLE);
 
         boolean found = false;
-
         robot.timer.reset();
 
         while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
@@ -55,7 +56,7 @@ public class BlueSkystone extends LinearOpMode {
         }
 
         if(!found){
-            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(14).build());
+            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(10).build());
         }
 
         while(!found){
@@ -63,7 +64,7 @@ public class BlueSkystone extends LinearOpMode {
             idle();
         }
 
-        Vector2d absoluteSkystoneLocation = new Vector2d(-robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
+        Vector2d absoluteSkystoneLocation = new Vector2d(-robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX() + OFFSET_SKYSTONE_CV,
                 robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() + (ROBOT_WIDTH / 2));
 
         Trajectory robotToSkystone = robot.drive.trajectoryBuilder()
@@ -82,8 +83,8 @@ public class BlueSkystone extends LinearOpMode {
         Pose2d robotpose = robot.drive.getLocalizer().getPoseEstimate();
 
         //go under the bridge
-        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(110)))
-                .splineTo(new Pose2d(0.5 * FOAM_TILE_INCH, 2.5 * FOAM_TILE_INCH, Math.toRadians(0)), new ConstantInterpolator(Math.toRadians(180)))
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(100)))
+                .splineTo(new Pose2d(0.5 * FOAM_TILE_INCH, 2 * FOAM_TILE_INCH, Math.toRadians(330)), new ConstantInterpolator(Math.toRadians(180)))
                 .build());
 
         robot.skystoneArm.ArmUp();
@@ -92,11 +93,12 @@ public class BlueSkystone extends LinearOpMode {
 
         //go near the next skystones
         robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder()
-                .lineTo(new Vector2d(-2 * FOAM_TILE_INCH, 1.7 * FOAM_TILE_INCH), new ConstantInterpolator(Math.toRadians(180)))
+                .lineTo(new Vector2d(-2 * FOAM_TILE_INCH, 1.9 * FOAM_TILE_INCH), new ConstantInterpolator(Math.toRadians(180)))
                 .build());
 
 
         found = false;
+        sleep(1000);
         robot.timer.reset();
 
         while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
@@ -105,7 +107,7 @@ public class BlueSkystone extends LinearOpMode {
         }
 
         if(!found){
-            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(14).build());
+            robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(10).build());
         }
 
         while(!found){
@@ -113,7 +115,7 @@ public class BlueSkystone extends LinearOpMode {
             idle();
         }
 
-        absoluteSkystoneLocation = new Vector2d(-robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX(),
+        absoluteSkystoneLocation = new Vector2d(-robot.vuforiaLocalizer.getSkystoneOffset().vec().getY() + robot.drive.getLocalizer().getPoseEstimate().vec().getX() + OFFSET_SKYSTONE_CV,
                 robot.vuforiaLocalizer.getSkystoneOffset().vec().getX() + robot.drive.getLocalizer().getPoseEstimate().vec().getY() + (ROBOT_WIDTH / 2));
 
         robotToSkystone = robot.drive.trajectoryBuilder()
@@ -130,11 +132,14 @@ public class BlueSkystone extends LinearOpMode {
 
         robotpose = robot.drive.getLocalizer().getPoseEstimate();
 
-        //go under the bridge
-        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(90)))
-                .splineTo(new Pose2d(0.5 * FOAM_TILE_INCH, -2 * FOAM_TILE_INCH, Math.toRadians(0)), new ConstantInterpolator(Math.toRadians(180)))
+        //go through under the bridge
+        robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder(new Pose2d(robotpose.getX(), robotpose.getY(), Math.toRadians(100)))
+                .splineTo(new Pose2d(0.5 * FOAM_TILE_INCH, 2 * FOAM_TILE_INCH, Math.toRadians(345)), new ConstantInterpolator(Math.toRadians(180)))
                 .build());
 
         robot.skystoneArm.ArmUp();
+
+        //park
+    robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().lineTo(new Vector2d(-0.25, 1.5*FOAM_TILE_INCH), new LinearInterpolator(Math.toRadians(180), Math.toRadians(90))).build());
     }
 }
