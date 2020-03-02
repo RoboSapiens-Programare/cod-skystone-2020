@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -54,11 +53,11 @@ public class VuforiaThread extends Thread {
     private OpenGLMatrix lastLocation = null;
     private VuforiaLocalizer vuforia = null;
 
-    public boolean isTargetVisible() {
-        return targetVisible;
+    public boolean isSkystoneVisible() {
+        return skystoneVisible;
     }
 
-    private boolean targetVisible = false;
+    private boolean skystoneVisible = false;
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
     private float phoneZRotate    = 0;
@@ -67,6 +66,9 @@ public class VuforiaThread extends Thread {
 
     public Pose2d getSkystoneOffset() {
         return skystoneOffset;
+    }
+    public Vector2d getSkystoneVec(Pose2d robotPose) {
+        return robotPose.vec().plus(skystoneOffset.vec().rotated(robotPose.getHeading() + Math.toRadians(phoneZRotate)));
     }
 
     private Pose2d skystoneOffset = new Pose2d();
@@ -216,7 +218,7 @@ public class VuforiaThread extends Thread {
 
         // We need to rotate the camera around it's long axis to bring the correct camera forward.
         if (CAMERA_CHOICE == BACK) {
-            phoneYRotate = -90;
+            phoneYRotate = -100; //TODO: TWEAK
         } else {
             phoneYRotate = 90;
         }
@@ -226,11 +228,13 @@ public class VuforiaThread extends Thread {
             phoneXRotate = 90 ;
         }
 
+        phoneZRotate = 90; //TODO: TWEAK
+
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 200.0f;   // eg: Camera is 4 Inches in front of robot center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 130;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = 195.0f;     // eg: Camera is ON the robot's center line
+        final float CAMERA_FORWARD_DISPLACEMENT  = -195.0f;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 130;      // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT     = 200.0f;   // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -263,40 +267,24 @@ public class VuforiaThread extends Thread {
     @Override
     public void run() {
         while (isAlive()){
-            boolean foundTargetLocal = false;
-            for (VuforiaTrackable trackable : allTrackables) {
-                if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                    foundTargetLocal = true;
+            if(((VuforiaTrackableDefaultListener)allTrackables.get(0).getListener()).isVisible()){
+                OpenGLMatrix skystoneLocationTransform = ((VuforiaTrackableDefaultListener)allTrackables.get(0).getListener()).getUpdatedRobotLocation();
+                    if (skystoneLocationTransform != null) {
+                        VectorF translation = skystoneLocationTransform.getTranslation();
 
-                    // getUpdatedRobotLocation() will return null if no new information is available since
-                    // the last time that call was made, or if the trackable is not currently visible.
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                    if (robotLocationTransform != null) {
-                        lastLocation = robotLocationTransform;
+                        Orientation rotation = Orientation.getOrientation(skystoneLocationTransform, EXTRINSIC, XYZ, RADIANS);
+
+                        skystoneOffset = new Pose2d(-translation.get(0) / mmPerInch, -translation.get(1) / mmPerInch, rotation.thirdAngle);
+                        skystoneVisible = true;
                     }
-                    break;
-                }
-            }
-
-            if (foundTargetLocal) {
-                // express position (translation) of robot in inches.
-                VectorF translation = lastLocation.getTranslation();
-
-                // express the rotation of the robot in degrees.
-                Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, RADIANS);
-
-                skystoneOffset = new Pose2d(translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, rotation.thirdAngle);
-                targetVisible = true;
-
             }
             else{
-                targetVisible = false;
+                skystoneVisible = false;
             }
         }
+
+        if(targetsSkyStone != null)
+            targetsSkyStone.deactivate();
     }
 
-    public void clearSkystoneCache(){
-        allTrackables = new ArrayList<>();
-        targetVisible = false;
-    }
 }
