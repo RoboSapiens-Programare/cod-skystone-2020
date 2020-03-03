@@ -157,14 +157,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         packet.put("headingError", lastError.getHeading());
 
 
-//        for ( String tfodTrigger : TfodIdleTriggers) {
-//            if (tfodTrigger.equals(tfodLocalizer.getLastTfodData().detectedObjectLabel)) {
-//                setMode(Mode.IDLE);
-//            }
-//        }
-
-
-
         switch (mode) {
             case IDLE:
                 //do nothing

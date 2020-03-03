@@ -31,10 +31,10 @@ public class DriverMode extends OpMode {
             robot.skystoneArm.ArmUp();
         }
 
-        if(gamepad2.x){
+        if(gamepad2.x || gamepad1.x){
             robot.intakeMechanism.Intake();
         }
-        else if (gamepad2.y){
+        else if (gamepad2.y || gamepad1.y){
             robot.intakeMechanism.Pushout();
         }
         else {

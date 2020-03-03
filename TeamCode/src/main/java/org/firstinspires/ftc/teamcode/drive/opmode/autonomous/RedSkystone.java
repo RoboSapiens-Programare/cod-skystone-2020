@@ -18,13 +18,9 @@ import static org.firstinspires.ftc.teamcode.drive.FieldConstants.FOAM_TILE_INCH
 @Autonomous(group = "drive")
 public class RedSkystone extends SkystoneAuto {
 
-    public RedSkystone() {
-        super(false);
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
-        initSkystone();
+        initSkystone(false);
 
         waitForStart();
 

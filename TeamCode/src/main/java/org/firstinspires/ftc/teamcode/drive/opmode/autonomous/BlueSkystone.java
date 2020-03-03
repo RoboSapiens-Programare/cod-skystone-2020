@@ -5,14 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous (group = "drive")
 //@Disabled
 public class BlueSkystone extends SkystoneAuto {
-
-    public BlueSkystone() {
-        super(true);
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
-        initSkystone();
+        initSkystone(true);
 
         waitForStart();
 

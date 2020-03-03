@@ -14,38 +14,47 @@ import static org.firstinspires.ftc.teamcode.drive.FieldConstants.FOAM_TILE_INCH
 
 @Autonomous(group = "drive")
 public abstract class SkystoneAuto extends LinearOpMode {
-    //Poses and vectors
-    private final Pose2d startPose = new Pose2d(-1.5 * FOAM_TILE_INCH, OPMODE_MIRROR * 2.7 * FOAM_TILE_INCH, Math.toRadians(180 + (OPMODE_MIRROR * 90)));
-    private final Vector2d skystoneSearcherVec1 = new Vector2d(-1.3 * FOAM_TILE_INCH, OPMODE_MIRROR * 1.9 * FOAM_TILE_INCH);
-    private final Vector2d skystoneSearcherVec2 = new Vector2d(-2.0 * FOAM_TILE_INCH, OPMODE_MIRROR * 1.9 * FOAM_TILE_INCH);
-    private final Pose2d throughTheBridgePose = new Pose2d(0.5 * FOAM_TILE_INCH, OPMODE_MIRROR * 2.0 * FOAM_TILE_INCH, Math.toRadians(180 + OPMODE_MIRROR * 150));
-    private final Vector2d parkVec = new Vector2d(-0.25, OPMODE_MIRROR * 1.5 * FOAM_TILE_INCH);
-
     //Blue or red
-    private static int OPMODE_MIRROR = 1;
+    private int OPMODE_MIRROR;
+
+    //Poses and vectors
+    private Pose2d startPose;
+    private Vector2d skystoneSearcherVec1;
+    private Vector2d skystoneSearcherVec2;
+    private Pose2d throughTheBridgePose;
+    private Vector2d parkVec;
 
     //The robot
     private Robot robot;
     public static int MAX_MILISECONDS = 3000;
 
-    public SkystoneAuto(boolean isBlue) {
-        if(!isBlue){
-            OPMODE_MIRROR = -1;
-        }
-    }
 
-    public void initSkystone(){
+    public void initSkystone(boolean isBlue){
         telemetry.addData(">", "Initializing...");
         telemetry.update();
 
         robot = new Robot(hardwareMap);
 
-        while (robot.isInitializing()) {
+        while (robot.isInitializing() && !opModeIsActive()) {
             idle();
         }
 
         telemetry.addData(">", "Initialized");
         telemetry.update();
+
+        if(!isBlue){
+            OPMODE_MIRROR = -1;
+        }
+        else{
+            OPMODE_MIRROR = 1;
+        }
+
+        startPose = new Pose2d(-1.5 * FOAM_TILE_INCH, OPMODE_MIRROR * 2.6 * FOAM_TILE_INCH, Math.toRadians(180 + (OPMODE_MIRROR * 90)));
+        skystoneSearcherVec1 = new Vector2d(-1.2 * FOAM_TILE_INCH, OPMODE_MIRROR * 1.9 * FOAM_TILE_INCH);
+        skystoneSearcherVec2 = new Vector2d(-2.0 * FOAM_TILE_INCH, OPMODE_MIRROR * 1.9 * FOAM_TILE_INCH);
+        throughTheBridgePose = new Pose2d(0.5 * FOAM_TILE_INCH, OPMODE_MIRROR * 2.0 * FOAM_TILE_INCH, Math.toRadians(180 + OPMODE_MIRROR * 150));
+        parkVec = new Vector2d(-0.25, OPMODE_MIRROR * 1.5 * FOAM_TILE_INCH);
+
     }
 
     public void runSkystone() throws InterruptedException {
@@ -62,7 +71,7 @@ public abstract class SkystoneAuto extends LinearOpMode {
         robot.timer.reset();
 
         //Analyze first 2 stones
-        while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
+        while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS && opModeIsActive()){
             found = robot.vuforiaLocalizer.isSkystoneVisible();
             idle();
         }
@@ -70,17 +79,17 @@ public abstract class SkystoneAuto extends LinearOpMode {
         //If not found after some time, move to the next one
         if(!found){
             if(OPMODE_MIRROR == 1) {
-                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(10).build());
+                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(7).build());
             }
             else{
-                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().back(10).build());
+                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().back(7).build());
             }
         }
 
         robot.timer.reset();
 
         //Try again
-        while(!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
+        while(!found && robot.timer.milliseconds() <= MAX_MILISECONDS && opModeIsActive()){
             found = robot.vuforiaLocalizer.isSkystoneVisible();
             idle();
         }
@@ -89,6 +98,8 @@ public abstract class SkystoneAuto extends LinearOpMode {
         //If not, jump to next identification
 
         if(found) {
+            sleep(200);
+
             Trajectory robotToSkystone = robot.drive.trajectoryBuilder()
                     .strafeTo(robot.vuforiaLocalizer.getSkystoneVec(robot.drive.getPoseEstimate()))
                     .build();
@@ -126,7 +137,7 @@ public abstract class SkystoneAuto extends LinearOpMode {
         robot.timer.reset();
 
         //Analyze first 2 stones
-        while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
+        while (!found && robot.timer.milliseconds() <= MAX_MILISECONDS && opModeIsActive()){
             found = robot.vuforiaLocalizer.isSkystoneVisible();
             idle();
         }
@@ -134,17 +145,17 @@ public abstract class SkystoneAuto extends LinearOpMode {
         //If not found after some time, move to the next one
         if(!found){
             if(OPMODE_MIRROR == 1) {
-                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(10).build());
+                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().forward(7).build());
             }
             else{
-                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().back(10).build());
+                robot.drive.followTrajectorySync(robot.drive.trajectoryBuilder().back(7).build());
             }
         }
 
         robot.timer.reset();
 
         //Try again
-        while(!found && robot.timer.milliseconds() <= MAX_MILISECONDS){
+        while(!found && robot.timer.milliseconds() <= MAX_MILISECONDS && opModeIsActive()){
             found = robot.vuforiaLocalizer.isSkystoneVisible();
             idle();
         }
@@ -152,6 +163,8 @@ public abstract class SkystoneAuto extends LinearOpMode {
         //If found, proceed
         //If not, go under the bridge & park
         if(found) {
+            sleep(200);
+
             Trajectory robotToSkystone = robot.drive.trajectoryBuilder()
                     .strafeTo(robot.vuforiaLocalizer.getSkystoneVec(robot.drive.getPoseEstimate()))
                     .build();

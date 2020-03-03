@@ -22,6 +22,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.ROBOT_WIDTH;
 
 public class VuforiaThread extends Thread {
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -64,12 +65,19 @@ public class VuforiaThread extends Thread {
 
     private VuforiaTrackables targetsSkyStone;
 
+    //Returns raw skystone offset reported by the camera
     public Pose2d getSkystoneOffset() {
         return skystoneOffset;
     }
+
+    //Returns the skystone offset relative to a coordinate system (based on the argument of the function)
     public Vector2d getSkystoneVec(Pose2d robotPose) {
-        return robotPose.vec().plus(skystoneOffset.vec().rotated(robotPose.getHeading() + Math.toRadians(phoneZRotate)));
+        //Firstly we take into account the width of the robot
+        Vector2d temp = new Vector2d(skystoneOffset.getX() - (ROBOT_WIDTH/2), skystoneOffset.getY());
+        //Then we rotate the relative offset and add it to the position of the robot
+        return robotPose.vec().plus(temp.rotated(robotPose.getHeading() + Math.toRadians(phoneZRotate)));
     }
+
 
     private Pose2d skystoneOffset = new Pose2d();
 
@@ -232,7 +240,7 @@ public class VuforiaThread extends Thread {
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = -195.0f;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_FORWARD_DISPLACEMENT  = -169.0f;   // eg: Camera is 4 Inches in front of robot center
         final float CAMERA_VERTICAL_DISPLACEMENT = 130;      // eg: Camera is 8 Inches above ground
         final float CAMERA_LEFT_DISPLACEMENT     = 200.0f;   // eg: Camera is ON the robot's center line
 
