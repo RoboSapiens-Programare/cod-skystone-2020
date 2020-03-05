@@ -35,7 +35,7 @@ public abstract class SkystoneAuto extends LinearOpMode {
 
         robot = new Robot(hardwareMap);
 
-        while (robot.isInitializing() && !opModeIsActive()) {
+        while (robot.isInitializing() && opModeIsActive()) {
             idle();
         }
 
