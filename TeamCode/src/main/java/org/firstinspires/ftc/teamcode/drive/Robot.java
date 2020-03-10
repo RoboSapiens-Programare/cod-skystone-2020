@@ -1,9 +1,13 @@
-package org.firstinspires.ftc.teamcode.drive.subsystems;
+package org.firstinspires.ftc.teamcode.drive;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.localizer.vision.VuforiaThread;
+import org.firstinspires.ftc.teamcode.drive.subsystems.FoundationGrabber;
+import org.firstinspires.ftc.teamcode.drive.subsystems.IntakeMechanism;
+import org.firstinspires.ftc.teamcode.drive.subsystems.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.subsystems.SkystoneArm;
 
 public class Robot {
     //TODO: clasa asta ar trebui sa aiba scop de logging si telemetry
@@ -13,6 +17,7 @@ public class Robot {
     //Subsystems
     public MecanumDrive drive;
     public SkystoneArm skystoneArm;
+    public FoundationGrabber foundationGrabber;
     public VuforiaThread vuforiaLocalizer;
     public IntakeMechanism intakeMechanism;
 
@@ -25,6 +30,7 @@ public class Robot {
 
         drive = new MecanumDrive(hardwareMap);
         skystoneArm = new SkystoneArm(hardwareMap);
+        foundationGrabber = new FoundationGrabber(hardwareMap);
         vuforiaLocalizer = new VuforiaThread(hardwareMap);
         intakeMechanism = new IntakeMechanism(hardwareMap);
 
@@ -41,6 +47,7 @@ public class Robot {
 
         drive = new MecanumDrive(hardwareMap);
         skystoneArm = new SkystoneArm(hardwareMap);
+        foundationGrabber = new FoundationGrabber(hardwareMap);
         intakeMechanism = new IntakeMechanism(hardwareMap);
 
         if(!suppressVuforia) {

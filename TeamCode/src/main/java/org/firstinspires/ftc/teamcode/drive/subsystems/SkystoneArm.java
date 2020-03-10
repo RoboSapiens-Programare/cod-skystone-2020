@@ -13,7 +13,7 @@ public class SkystoneArm {
     }
 
     public void ArmUp(){
-        armServo.setPosition(1); //TODO: values
+        armServo.setPosition(1);
     }
 
     public void ArmDown(){

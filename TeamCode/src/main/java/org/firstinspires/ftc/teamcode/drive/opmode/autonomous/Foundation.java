@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.subsystems.Robot;
+import org.firstinspires.ftc.teamcode.drive.Robot;
 
 import static org.firstinspires.ftc.teamcode.drive.FieldConstants.FOAM_TILE_INCH;
 

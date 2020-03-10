@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.drive.subsystems.Robot;
+import org.firstinspires.ftc.teamcode.drive.Robot;
 
 @Config
 @TeleOp(group = "driver")
@@ -39,6 +39,13 @@ public class DriverMode extends OpMode {
         }
         else {
             robot.intakeMechanism.Stop();
+        }
+
+        if(gamepad1.a){
+            robot.foundationGrabber.Grab();
+        }
+        else if(gamepad1.b){
+            robot.foundationGrabber.Release();
         }
     }
 
